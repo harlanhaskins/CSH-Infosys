@@ -12,7 +12,6 @@ def topHeadline(apikey):
     headlineDict = xmltodict.parse(headlines.text)
     try:
         headline = headlineDict["rss"]["channel"]["item"][0]["title"]
-        print(headline)
         return headline
     except KeyError:
         return None

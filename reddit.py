@@ -85,7 +85,7 @@ if __name__ == "__main__":
     subreddit = normalizedSubreddit(args.subreddit)
     title = topTitle(subreddit)
     if not title:
-        print("title not found")
+        # print("title not found")
         exit(0)
 
     postTitleToSign(title, subreddit, exclude_leadin=args.exclude_leadin, REDDIT_HEADER=fileID)
