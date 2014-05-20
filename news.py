@@ -4,12 +4,15 @@ import xmltodict
 import xmlrpclib
 
 def topHeadline(apikey):
-    USA_TODAY_URL = "http://api.usatoday.com/open/breaking?expired=true&api_key=" + args.apikey
-    headlines = requests.get(USA_TODAY_URL)
+    parameters = {"expired" : True,
+                  "api_key" : apikey}
+    USA_TODAY_URL = "http://api.usatoday.com/open/breaking"
+    headlines = requests.get(USA_TODAY_URL, params=parameters)
 
     headlineDict = xmltodict.parse(headlines.text)
     try:
-        return headlineDict["rss"]["channel"]["item"][0]["title"]
+        headline = headlineDict["rss"]["channel"]["item"][0]["title"]
+        return headline
     except KeyError:
         return None
 

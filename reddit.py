@@ -3,59 +3,70 @@ import xmlrpclib
 import re
 import argparse
 
-parser = argparse.ArgumentParser(description='Read from a subreddit.')
-parser.add_argument("-r", "--subreddit", help="specify the subreddit from which to read.")
+def normalizedSubreddit(subreddit):
+    if subreddit:
+        return "/r/" + subreddit
+    else:
+        return "/hot"
 
-args = parser.parse_args()
+def topTitle(subreddit):
+    hotPosts = requests.get('http://www.reddit.com' + subreddit + '.json')
 
-if args.subreddit:
-    subreddit = "/r/" + args.subreddit
-else:
-    subreddit = "/hot"
+    posts = hotPosts.json()["data"]["children"]
 
-print subreddit
+    title = ""
+    for post in posts:
+        if not post["data"]["stickied"]:
+            title = post['data']['title']
+            break
 
-hotPosts = requests.get('http://www.reddit.com' + subreddit + '.json')
+    return normalizedTitle(title)
 
-if subreddit == "/hot":
-    subreddit = "Reddit"
-print subreddit
+def normalizedTitle(title):
+    title = re.sub(r'^[\[\(][fmFM][\]\)]\s+', '', title)
+    title = re.sub(r'\s+[\[\(][fmFM][\]\)]$', '', title)
+    title = re.sub(r'\s+[\[\(][fmFM][\]\)]\s+', ' ', title)
+    title = re.sub(r'[\[\(]([fmFM])[\]\)]', '\\1', title)
+    return title
 
-posts = hotPosts.json()["data"]["children"]
+def postTitleToSign(title):
+    REDDIT_HEADER = "33"
+    REDDIT_FILE = "34"
 
-title = ""
-for post in posts:
-    if not post["data"]["stickied"]:
-        title = post['data']['title']
-        break
+    server = xmlrpclib.ServerProxy("http://infosys.csh.rit.edu:8080")
 
-title = re.sub(r'^[\[\(][fmFM][\]\)]\s+', '', title)
-title = re.sub(r'\s+[\[\(][fmFM][\]\)]$', '', title)
-title = re.sub(r'\s+[\[\(][fmFM][\]\)]\s+', ' ', title)
-title = re.sub(r'[\[\(]([fmFM])[\]\)]', '\\1', title)
+    flash = False
 
-REDDIT_HEADER = "33"
-REDDIT_FILE = "34"
+    if not server.fileExists(REDDIT_HEADER):
+        server.delFile(REDDIT_HEADER)
+        server.addFile(REDDIT_HEADER)
+        flash = True
 
-server = xmlrpclib.ServerProxy("http://infosys.csh.rit.edu:8080")
+        server.addText(REDDIT_HEADER, "ROTATE", "%" + REDDIT_FILE, REDDIT_FILE)
 
-flash = False
+    if not server.fileExists(REDDIT_FILE):
+        server.delFile(REDDIT_FILE)
+        server.addFile(REDDIT_FILE)
+        flash = True
 
-if not server.fileExists(REDDIT_HEADER):
-    server.delFile(REDDIT_HEADER)
-    server.addFile(REDDIT_HEADER)
-    flash = True
+    server.addString(REDDIT_FILE, title)
 
-    server.addText(REDDIT_HEADER, "ROTATE", "%" + REDDIT_FILE, REDDIT_FILE)
+    flash = bool(title) or flash
 
-if not server.fileExists(REDDIT_FILE):
-    server.delFile(REDDIT_FILE)
-    server.addFile(REDDIT_FILE)
-    flash = True
+    if flash:
+        server.updateSign()
 
-server.addString(REDDIT_FILE, title)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Read from a subreddit.')
+    parser.add_argument("-r", "--subreddit", help="specify the subreddit from which to read.")
+    parser.add_argument("-l", "--exclude-lead", 
+                        help="Specifies that this subreddit will not be identified prior to display.", action="store_true")
 
-flash = bool(title) or flash
+    args = parser.parse_args()
 
-if flash:
-    server.updateSign()
+    subreddit = normalizedSubreddit(args.subreddit)
+    title = topTitle(subreddit)
+    if not title:
+        exit(0)
+    postTitleToSign(title)
+
