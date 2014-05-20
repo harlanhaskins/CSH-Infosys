@@ -8,7 +8,11 @@ parser.add_argument("-r", "--subreddit", help="specify the subreddit from which 
 
 args = parser.parse_args()
 
-subreddit = "/r/" + args.subreddit if args.subreddit else "/hot"
+if args.subreddit:
+    subreddit = "/r/" + args.subreddit
+else:
+    subreddit = "/hot"
+
 print subreddit
 
 hotPosts = requests.get('http://www.reddit.com' + subreddit + '.json')
@@ -25,6 +29,11 @@ for post in posts:
         title = post['data']['title']
         break
 
+title = re.sub(r'^[\[\(][fmFM][\]\)]\s+', '', title)
+title = re.sub(r'\s+[\[\(][fmFM][\]\)]$', '', title)
+title = re.sub(r'\s+[\[\(][fmFM][\]\)]\s+', ' ', title)
+title = re.sub(r'[\[\(]([fmFM])[\]\)]', '\\1', title)
+
 REDDIT_HEADER = "33"
 REDDIT_FILE = "34"
 
@@ -37,8 +46,7 @@ if not server.fileExists(REDDIT_HEADER):
     server.addFile(REDDIT_HEADER)
     flash = True
 
-    server.addText(REDDIT_HEADER, "ROTATE", "Top " + subreddit + " Post:")
-    server.addText(REDDIT_HEADER, "ROTATE", " %" + REDDIT_FILE, REDDIT_FILE)
+    server.addText(REDDIT_HEADER, "ROTATE", "%" + REDDIT_FILE, REDDIT_FILE)
 
 if not server.fileExists(REDDIT_FILE):
     server.delFile(REDDIT_FILE)
