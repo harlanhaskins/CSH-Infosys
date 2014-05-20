@@ -10,17 +10,20 @@ def normalizedSubreddit(subreddit):
         return "/hot"
 
 def topTitle(subreddit):
-    hotPosts = requests.get('http://www.reddit.com' + subreddit + '.json')
+    try:
+        hotPosts = requests.get('http://www.reddit.com' + subreddit + '.json')
 
-    posts = hotPosts.json()["data"]["children"]
+        posts = hotPosts.json()["data"]["children"]
 
-    title = ""
-    for post in posts:
-        if not post["data"]["stickied"]:
-            title = post['data']['title']
-            break
+        title = ""
+        for post in posts:
+            if not post["data"]["stickied"]:
+                title = post['data']['title']
+                break
 
-    return normalizedTitle(title)
+        return normalizedTitle(title)
+    except KeyError:
+        return None
 
 def normalizedTitle(title):
     title = re.sub(r'^[\[\(][fmFM][\]\)]\s+', '', title)
@@ -72,16 +75,10 @@ if __name__ == "__main__":
     else:
         fileID = "33"
 
-    INVALID_FILE_ERROR = "File must be in range 30 - 39"
-
     try:
         fileInt = int(fileID)
     except ValueError:
-        print(INVALID_FILE_ERROR)
-
-    if not fileInt in range(30, 38):
-        print(INVALID_FILE_ERROR)
-        exit(0)
+        print("File must be an integer.")
 
     headerID, fileID = files(fileInt)
 
