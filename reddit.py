@@ -38,8 +38,8 @@ def postTitleToSign(title, subreddit, exclude_leadin=False, REDDIT_HEADER="33", 
     if server.fileExists(REDDIT_HEADER):
         server.delFile(REDDIT_HEADER)
 
-    if server.fileExists(REDDIT_FILE):
-        server.delFile(REDDIT_FILE)
+    if not server.fileExists(REDDIT_HEADER):
+        server.delFile(REDDIT_HEADER)
 
     server.addFile(REDDIT_HEADER)
     server.addFile(REDDIT_FILE)
@@ -87,9 +87,6 @@ if __name__ == "__main__":
 
     subreddit = normalizedSubreddit(args.subreddit)
     title = topTitle(subreddit)
-    if not title:
-        print("Title not found.")
-        exit(0)
 
     postTitleToSign(title, subreddit, exclude_leadin=args.exclude_leadin, REDDIT_HEADER=headerID, REDDIT_FILE=fileID)
 
