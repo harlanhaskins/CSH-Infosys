@@ -187,6 +187,7 @@ class Methods:
   def updateSign(self):
     dom = getDom()
     parsexml(dom.toxml())
+    print("updating sign")
     return 'ok'
 
   def clearAll(self):
