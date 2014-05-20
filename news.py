@@ -1,7 +1,7 @@
 import argparse
 import requests
 import xmltodict
-import xmlrpclib
+from boilerplate import *
 
 def topHeadline(apikey):
     parameters = {"expired" : True,
@@ -12,6 +12,7 @@ def topHeadline(apikey):
     headlineDict = xmltodict.parse(headlines.text)
     try:
         headline = headlineDict["rss"]["channel"]["item"][0]["title"]
+        print(headline)
         return headline
     except KeyError:
         return None
@@ -20,26 +21,20 @@ def postHeadlineToSign(headline):
     NEWS_HEADER = "22"
     NEWS_FILE = "23"
 
-    flash = False
-
-    server = xmlrpclib.ServerProxy("http://infosys.csh.rit.edu:8080")
-
+    update = False
     if not server.fileExists(NEWS_HEADER):
-        server.delFile(NEWS_HEADER)
         server.addFile(NEWS_HEADER)
-        flash = True
-
-        server.addText(NEWS_HEADER, "ROTATE", "Top Headline:")
-        server.addText(NEWS_HEADER, "ROTATE", " %" + NEWS_FILE, NEWS_FILE)
+        server.addText(NEWS_HEADER, "ROTATE", 
+                        "Top Headline: %" + NEWS_FILE, NEWS_FILE)
+        update = True
 
     if not server.fileExists(NEWS_FILE):
-        server.delFile(NEWS_FILE)
         server.addFile(NEWS_FILE)
-        flash = True
+        update = True
 
     server.addString(NEWS_FILE, headline)
 
-    if flash:
+    if update:
         server.updateSign()
 
 if __name__ == "__main__":

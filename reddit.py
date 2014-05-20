@@ -1,7 +1,7 @@
 import requests
-import xmlrpclib
 import re
 import argparse
+from boilerplate import *
 
 def normalizedSubreddit(subreddit):
     if subreddit:
@@ -32,35 +32,36 @@ def normalizedTitle(title):
     title = re.sub(r'[\[\(]([fmFM])[\]\)]', '\\1', title)
     return title
 
-def postTitleToSign(title, subreddit, update=True, exclude_leadin=False, REDDIT_HEADER="33", REDDIT_FILE="34"):
+def files(headerID):
+    fileID = int(headerID) + 1
+    return (headerID, str(fileID))
+
+def postTitleToSign(title, subreddit, exclude_leadin=False, REDDIT_HEADER="34"):
     if not title:
         return
 
-    server = xmlrpclib.ServerProxy("http://infosys.csh.rit.edu:8080")
-
-    if server.fileExists(REDDIT_HEADER):
-        server.delFile(REDDIT_HEADER)
+    REDDIT_HEADER, REDDIT_FILE = files(REDDIT_HEADER)
+    update = False
 
     if not server.fileExists(REDDIT_HEADER):
-        server.delFile(REDDIT_HEADER)
+        server.addFile(REDDIT_HEADER)
+        server.addText(REDDIT_HEADER, "ROTATE", "%" + REDDIT_FILE, REDDIT_FILE)
+        update = True
 
-    server.addFile(REDDIT_HEADER)
-    server.addFile(REDDIT_FILE)
+    if not server.fileExists(REDDIT_FILE):
+        server.addFile(REDDIT_FILE)
+        update = True
 
     if subreddit == "/hot":
         subreddit = "Reddit"
 
     if not exclude_leadin:
-        leadin = "Top post from " + subreddit + ":"
-        server.addText(REDDIT_HEADER, "HOLD", leadin, REDDIT_HEADER)
-    server.addText(REDDIT_FILE, "ROTATE", title, REDDIT_FILE)
+        title = "Top post from " + subreddit + ": " + title
+
+    server.addString(REDDIT_FILE, title)
 
     if update:
       server.updateSign()
-
-def files(fileID):
-    secondID = fileID + 1
-    return (str(fileID), str(secondID))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Read from a subreddit.')
@@ -68,7 +69,6 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--exclude-leadin", 
                         help="Specifies that this subreddit will not be identified prior to display.", action="store_true")
     parser.add_argument("-f", "--fileID", help="The file number you'd like.")
-    parser.add_argument("--no-update", help="Update the sign files without updating the sign.", action="store_true")
 
     args = parser.parse_args()
 
@@ -82,10 +82,11 @@ if __name__ == "__main__":
     except ValueError:
         print("File must be an integer.")
 
-    headerID, fileID = files(fileInt)
-
     subreddit = normalizedSubreddit(args.subreddit)
     title = topTitle(subreddit)
+    if not title:
+        print("title not found")
+        exit(0)
 
-    postTitleToSign(title, subreddit, update=(not args.no_update), exclude_leadin=args.exclude_leadin, REDDIT_HEADER=headerID, REDDIT_FILE=fileID)
+    postTitleToSign(title, subreddit, exclude_leadin=args.exclude_leadin, REDDIT_HEADER=fileID)
 

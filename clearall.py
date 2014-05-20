@@ -1,12 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 #clearall.py
 #Original author: ???
 #A utility script to wipe the contents of the sign
 
-import xmlrpclib
+from boilerplate import *
 
-server = xmlrpclib.ServerProxy("http://infosys.csh.rit.edu:8080")
-
-server.clearAll()
-server.updateSign()
+if __name__ == "__main__":
+    server.clearAll()
+    server.updateSign()
