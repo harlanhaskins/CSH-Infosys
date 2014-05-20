@@ -35,25 +35,23 @@ def postTitleToSign(title):
 
     server = xmlrpclib.ServerProxy("http://infosys.csh.rit.edu:8080")
 
-    flash = False
+    update_sign = False
 
     if not server.fileExists(REDDIT_HEADER):
         server.delFile(REDDIT_HEADER)
         server.addFile(REDDIT_HEADER)
-        flash = True
+        update_sign = True
 
         server.addText(REDDIT_HEADER, "ROTATE", "%" + REDDIT_FILE, REDDIT_FILE)
 
     if not server.fileExists(REDDIT_FILE):
         server.delFile(REDDIT_FILE)
         server.addFile(REDDIT_FILE)
-        flash = True
+        update_sign = True
 
     server.addString(REDDIT_FILE, title)
 
-    flash = bool(title) or flash
-
-    if flash:
+    if title or update_sign:
         server.updateSign()
 
 if __name__ == "__main__":
