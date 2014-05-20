@@ -32,7 +32,7 @@ def normalizedTitle(title):
     title = re.sub(r'[\[\(]([fmFM])[\]\)]', '\\1', title)
     return title
 
-def postTitleToSign(title, subreddit, exclude_leadin=False, REDDIT_HEADER="33", REDDIT_FILE="34"):
+def postTitleToSign(title, subreddit, update=True, exclude_leadin=False, REDDIT_HEADER="33", REDDIT_FILE="34"):
     if not title:
         return
 
@@ -55,7 +55,8 @@ def postTitleToSign(title, subreddit, exclude_leadin=False, REDDIT_HEADER="33", 
         server.addText(REDDIT_HEADER, "HOLD", leadin, REDDIT_HEADER)
     server.addText(REDDIT_FILE, "ROTATE", title, REDDIT_FILE)
 
-    server.updateSign()
+    if update:
+      server.updateSign()
 
 def files(fileID):
     secondID = fileID + 1
@@ -66,7 +67,8 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--subreddit", help="specify the subreddit from which to read.")
     parser.add_argument("-l", "--exclude-leadin", 
                         help="Specifies that this subreddit will not be identified prior to display.", action="store_true")
-    parser.add_argument("-f", "--fileID", help="The file number you'd like (30-40)")
+    parser.add_argument("-f", "--fileID", help="The file number you'd like.")
+    parser.add_argument("--no-update", help="Update the sign files without updating the sign.", action="store_true")
 
     args = parser.parse_args()
 
@@ -85,5 +87,5 @@ if __name__ == "__main__":
     subreddit = normalizedSubreddit(args.subreddit)
     title = topTitle(subreddit)
 
-    postTitleToSign(title, subreddit, exclude_leadin=args.exclude_leadin, REDDIT_HEADER=headerID, REDDIT_FILE=fileID)
+    postTitleToSign(title, subreddit, update=(not args.no_update), exclude_leadin=args.exclude_leadin, REDDIT_HEADER=headerID, REDDIT_FILE=fileID)
 
