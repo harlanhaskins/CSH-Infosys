@@ -1,20 +1,25 @@
 import argparse
 import requests
-import xmltodict
 from boilerplate import *
 
 def topHeadline(apikey):
-    parameters = {"expired" : True,
-                  "api_key" : apikey}
-    USA_TODAY_URL = "http://api.usatoday.com/open/breaking"
-    headlines = requests.get(USA_TODAY_URL, params=parameters)
+    parameters = {"section" : "news"}
+    GUARDIAN_URL = "http://content.guardianapis.com/search"
+    headlines = requests.get(GUARDIAN_URL, params=parameters).json()
 
-    headlineDict = xmltodict.parse(headlines.text)
     try:
-        headline = headlineDict["rss"]["channel"]["item"][0]["title"]
+        headline = headlines["response"]["results"][0]["webTitle"]
+        headline = headline.encode('ascii', 'ignore')
+        print (headline)
         return headline
     except KeyError:
         return None
+
+def asciify(string):
+    # remove non-ascii characters. whoops.
+    asciifiedString = [char for char in string if ord(char) < 128]
+    print asciifiedString
+    return asciifiedString
 
 def postHeadlineToSign(headline):
     NEWS_HEADER = "22"
