@@ -22,7 +22,7 @@ def postHeadlineToSign(headline):
     if not server.fileExists(NEWS_HEADER):
         server.addFile(NEWS_HEADER)
         server.addText(NEWS_HEADER, "ROTATE", 
-                        "Top Headline: %" + NEWS_FILE, NEWS_FILE)
+                        "The Guardian: %" + NEWS_FILE, NEWS_FILE)
         update = True
 
     if not server.fileExists(NEWS_FILE):
