@@ -15,7 +15,7 @@ def postTitleToSign(title):
 
     if not server.fileExists(HN_HEADER):
         server.addFile(HN_HEADER)
-        server.addText(HN_HEADER, "ROTATE", "Top Hacker News Post: %" + HN_FILE, HN_FILE)
+        server.addText(HN_HEADER, "ROTATE", "Hacker News: %" + HN_FILE, HN_FILE)
         update = True
 
     if not server.fileExists(HN_FILE):

@@ -56,7 +56,7 @@ def postTitleToSign(title, subreddit, REDDIT_HEADER, exclude_leadin=False):
         subreddit = "Reddit"
 
     if not exclude_leadin:
-        title = "Top post from " + subreddit + ": " + title
+        title = subreddit + ": " + title
 
     server.addString(REDDIT_FILE, title)
 
