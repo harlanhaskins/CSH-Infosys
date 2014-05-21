@@ -10,16 +10,9 @@ def topHeadline(apikey):
     try:
         headline = headlines["response"]["results"][0]["webTitle"]
         headline = headline.encode('ascii', 'ignore')
-        print (headline)
         return headline
     except KeyError:
         return None
-
-def asciify(string):
-    # remove non-ascii characters. whoops.
-    asciifiedString = [char for char in string if ord(char) < 128]
-    print asciifiedString
-    return asciifiedString
 
 def postHeadlineToSign(headline):
     NEWS_HEADER = "22"

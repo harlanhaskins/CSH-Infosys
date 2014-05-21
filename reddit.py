@@ -36,7 +36,7 @@ def files(headerID):
     fileID = int(headerID) + 1
     return (headerID, str(fileID))
 
-def postTitleToSign(title, subreddit, exclude_leadin=False, REDDIT_HEADER="34"):
+def postTitleToSign(title, subreddit, REDDIT_HEADER, exclude_leadin=False):
     if not title:
         return
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     if args.fileID:
         fileID = args.fileID
     else:
-        fileID = "33"
+        fileID = "34"
 
     try:
         fileInt = int(fileID)
@@ -88,5 +88,5 @@ if __name__ == "__main__":
         # print("title not found")
         exit(0)
 
-    postTitleToSign(title, subreddit, exclude_leadin=args.exclude_leadin, REDDIT_HEADER=fileID)
+    postTitleToSign(title, subreddit, fileID, exclude_leadin=args.exclude_leadin)
 

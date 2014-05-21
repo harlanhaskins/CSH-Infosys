@@ -29,53 +29,53 @@ windchill = "Not Available"
 
 # search the file for the weather and store the string
 try:
-	re2 = re.search(r'<weather>(.*?)</weather>', data)
-	weather = re2.group(1)
+    re2 = re.search(r'<weather>(.*?)</weather>', data)
+    weather = re2.group(1)
 except (AttributeError):
-	pass
+    pass
 
 # search the file for the temp and store the string
 try:
-	re3 = re.search(r'<temperature_string>(.*?)</temperature_string>', data)
-	temp = re3.group(1)
+    re3 = re.search(r'<temperature_string>(.*?)</temperature_string>', data)
+    temp = re3.group(1)
 except (AttributeError):
-	pass
+    pass
 
-# search the file for the windchill and store the string
+# search the file for the wind and store the string
 try:
-	re4 = re.search(r'<windchill_string>(.*?)</windchill_string>', data)
-	windchill = re4.group(1)
+    re4 = re.search(r'<wind_string>(.*?)</wind_string>', data)
+    windchill = re4.group(1)
 except (AttributeError):
-	pass
+    pass
 
 flash = False
 # add the weather to little infosys (see the wiki for more details)
 server = xmlrpclib.ServerProxy("http://infosys.csh.rit.edu:8080")
 
 if not server.fileExists(WTHR_HEADER):
-	server.delFile(WTHR_HEADER)
-	server.addFile(WTHR_HEADER)
-	flash = True
+    server.delFile(WTHR_HEADER)
+    server.addFile(WTHR_HEADER)
+    flash = True
 
-	server.addText(WTHR_HEADER, "ROTATE", "Current Weather Conditions:")
-	server.addText(WTHR_HEADER, "HOLD", " %" + WTHR_FILE, WTHR_FILE)
-	server.addText(WTHR_HEADER, "ROTATE", "Current Temperature:")
-	server.addText(WTHR_HEADER, "HOLD", " %" + TEMP_FILE, TEMP_FILE)
-	server.addText(WTHR_HEADER, "ROTATE", "Current Windchill:")
-	server.addText(WTHR_HEADER, "HOLD", " %" + WIND_FILE, WIND_FILE)
+    server.addText(WTHR_HEADER, "ROTATE", "Current Weather Conditions:")
+    server.addText(WTHR_HEADER, "HOLD", " %" + WTHR_FILE, WTHR_FILE)
+    server.addText(WTHR_HEADER, "ROTATE", "Current Temperature:")
+    server.addText(WTHR_HEADER, "HOLD", " %" + TEMP_FILE, TEMP_FILE)
+    server.addText(WTHR_HEADER, "ROTATE", "Current Wind:")
+    server.addText(WTHR_HEADER, "HOLD", " %" + WIND_FILE, WIND_FILE)
 
 if not server.fileExists(WTHR_FILE):
-	server.delFile(WTHR_FILE)
-	server.addFile(WTHR_FILE)
-	flash = True
+    server.delFile(WTHR_FILE)
+    server.addFile(WTHR_FILE)
+    flash = True
 if not server.fileExists(TEMP_FILE):
-	server.delFile(TEMP_FILE)
-	server.addFile(TEMP_FILE)
-	flash = True
+    server.delFile(TEMP_FILE)
+    server.addFile(TEMP_FILE)
+    flash = True
 if not server.fileExists(WIND_FILE):
-	server.delFile(WIND_FILE)
-	server.addFile(WIND_FILE)
-	flash = True
+    server.delFile(WIND_FILE)
+    server.addFile(WIND_FILE)
+    flash = True
 
 server.addString(WTHR_FILE, weather)
 server.addString(TEMP_FILE, temp)
@@ -83,4 +83,4 @@ server.addString(WIND_FILE, windchill)
 
 flash = lastupdated.getTime() or flash
 if flash:
-	server.updateSign()
+    server.updateSign()
