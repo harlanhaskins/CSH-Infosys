@@ -3,7 +3,10 @@ import requests
 
 def nextPun():
     try:
-        return requests.get("http://san.csh.rit.edu:4200/next")
+        pun = requests.get("http://san.csh.rit.edu:4200/next")
+        punText = pun.json()["tweet"]["content"]
+        return punText
+
     except:
         return None
 
@@ -27,7 +30,7 @@ def postPunToSign(pun):
         server.updateSign()
 
 if __name__ == "__main__":
-    pun = nextPun().json()
+    pun = nextPun()
     if not pun:
         exit(0)
-    postPunToSign(pun["tweet"]["content"])
+    postPunToSign(pun)
