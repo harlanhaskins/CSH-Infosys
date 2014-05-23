@@ -5,6 +5,8 @@ def nextPun():
     try:
         pun = requests.get("http://san.csh.rit.edu:4200/next")
         punText = pun.json()["tweet"]["content"]
+        if type(punText) == unicode:
+            punText = punText.decode('ascii', 'ignore')
         return punText
 
     except:

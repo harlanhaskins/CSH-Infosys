@@ -5,7 +5,7 @@
 #Current maintainer: Josh McSavaney ( mcsaucy@csh.rit.edu )
 #A script used to scrape and parse weather information
 
-import urllib, re, xmlrpclib, lastupdated
+import urllib, re, xmlrpclib, lastupdated, time
  
 # get the file from the site
 file = urllib.urlopen('http://www.weather.gov/data/current_obs/KROC.xml')
@@ -83,4 +83,5 @@ server.addString(WIND_FILE, windchill)
 
 flash = lastupdated.getTime() or flash
 if flash:
+    time.sleep(1)
     server.updateSign()
