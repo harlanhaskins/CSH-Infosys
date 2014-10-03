@@ -1,3 +1,3 @@
 import xmlrpclib
 
-server = xmlrpclib.ServerProxy('http://infosys.csh.rit.edu:8080')
+server = xmlrpclib.ServerProxy('http://129.21.50.103:8080')
