@@ -27,7 +27,7 @@ def postToSign(text, FILE_ID):
     if not server.fileExists(FILE_ID):
         server.addFile(FILE_ID)
 
-    server.addString(FILE_ID, text)
+    server.addText(FILE_ID, "ROTATE", text)
 
     server.updateSign()
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     if args.fileID:
         fileID = args.fileID
     else:
-        fileID = "36"
+        fileID = "52"
 
     creds = json.loads(open(args.credsFile, "r").read())
 
