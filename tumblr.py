@@ -24,11 +24,10 @@ def getPostWithLimit(client, user, line_limit = 80):
             return post
 
 def postToSign(text, FILE_ID):
-    if not server.fileExists(FILE_ID):
-        server.addFile(FILE_ID)
-
+    if server.fileExists(FILE_ID):
+        server.delFile(FILE_ID)
+    server.addFile(FILE_ID)
     server.addText(FILE_ID, "ROTATE", text)
-
     server.updateSign()
 
 if __name__ == "__main__":
